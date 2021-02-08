@@ -1,0 +1,53 @@
+version: "3.3"
+
+services:
+  chitchat-api:
+    build:
+      context: .
+      dockerfile: ./Api/Dockerfile
+    container_name: Api
+    ports:
+      - 8080:8080
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Container
+    networks:
+      - chitchat-network
+    depends_on:
+      - chitchat-mssql
+    command: dotnet Api.dll
+
+  chitchat-queue:
+    build:
+      context: .
+      dockerfile: ./Queue/Dockerfile
+    container_name: Queue
+    ports:
+      - 8081:8081
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Container
+    networks:
+      - chitchat-network
+    depends_on:
+      - chitchat-mssql
+    command: dotnet Queue.dll
+
+  chitchat-mssql:
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    container_name: mssql
+    ports:
+      - 1433:1433
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=root#123456
+      - MSSQL_PID=Express
+    volumes:
+      - mssql:/var/opt/mssql
+    networks:
+      - chitchat-network
+
+volumes:
+  mssql:
+
+networks:
+  chitchat-network:
+    driver: bridge
