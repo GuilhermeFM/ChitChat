@@ -14,7 +14,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace kta_core.tests
+namespace Authentication.tests
 {
     public class SignInTests
     {

@@ -35,7 +35,7 @@ namespace Authentication.Services
 
         #endregion
 
-        public async Task<string> SignUpAsync(string email, string password)
+        public async Task SignUpAsync(string email, string password)
         {
             var user = new User
             {
@@ -58,10 +58,6 @@ namespace Authentication.Services
 
                 throw new UserSignUpException(error, "Failed to create user.");
             }
-
-            var confirmationEmailToken = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-
-            return confirmationEmailToken;
         }
 
         public async Task<string> SignInAsync(string email, string password)
@@ -150,21 +146,6 @@ namespace Authentication.Services
                 }
 
                 throw new InvalidTokenException(error, "Invalid Token.");
-            }
-        }
-
-        public async Task ConfirmEmail(string email, string token)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                throw new InvalidUserException("Invalid Token.");
-            }
-
-            var result = await _userManager.ConfirmEmailAsync(user, token);
-            if (!result.Succeeded)
-            {
-                throw new InvalidTokenException("Invalid Token.");
             }
         }
     }

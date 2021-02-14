@@ -4,6 +4,7 @@ using Authentication.Models;
 using Authentication.Models.Settings;
 using Authentication.Services;
 using Core.Contexts;
+using Core.Services;
 using Hangfire;
 using Hangfire.SqlServer;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -74,8 +75,6 @@ namespace Api
 
                 options.User.AllowedUserNameCharacters =
                     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
-
-                options.SignIn.RequireConfirmedEmail = true;
             })
             .AddEntityFrameworkStores<AuthenticationDBContext>()
             .AddDefaultTokenProviders();
@@ -139,6 +138,7 @@ namespace Api
             services.AddSignalR();
             services.AddTransient<AuthenticateService>();
             services.Configure<AuthenticateServiceSettings>(Configuration.GetSection("JWT"));
+            services.AddTransient<UserService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

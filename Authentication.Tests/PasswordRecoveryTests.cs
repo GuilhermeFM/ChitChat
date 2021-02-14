@@ -13,7 +13,7 @@ using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
 
-namespace kta_core.tests
+namespace Authentication.tests
 {
     public class PasswordRecoveryTests
     {
@@ -188,7 +188,7 @@ namespace kta_core.tests
             _userManagerMock
                 .Setup(x => x.FindByEmailAsync(It.IsAny<string>()))
                 .ReturnsAsync(user);
-            
+
             _userManagerMock
                 .Setup(x => x.ResetPasswordAsync(It.IsAny<User>(), It.IsAny<string>(), It.IsAny<string>()))
                 .ReturnsAsync(IdentityResult.Failed(mockInvalidPassword));

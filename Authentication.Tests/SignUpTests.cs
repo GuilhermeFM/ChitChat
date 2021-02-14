@@ -13,7 +13,7 @@ using NUnit.Framework;
 using System;
 using System.Threading.Tasks;
 
-namespace kta_core.tests
+namespace Authentication.tests
 {
     public class SignUpTests
     {
@@ -66,12 +66,7 @@ namespace kta_core.tests
                 It.Is<User>(x => x.Email == email && x.UserName == email), password
             ), "Should call CreateAsync");
 
-            _userManagerMock.Verify(x => x.GenerateEmailConfirmationTokenAsync(
-                It.Is<User>(p => p.Email == email && p.UserName == email)
-            ), "Should call GenerateEmailConfirmationTokenAsync");
-
-            var emailConfirmationToken = await authenticateService.SignUpAsync(email, password);
-            Assert.That(emailConfirmationToken == mockEmailConfirmationToken, "Token should match");
+            await authenticateService.SignUpAsync(email, password);
         }
 
         [Test]
