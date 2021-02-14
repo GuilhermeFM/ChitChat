@@ -3,7 +3,6 @@
 using Authentication.Exceptions;
 using Authentication.Jobs;
 using Authentication.Services;
-using Core.Contexts;
 using Core.Services;
 using Hangfire;
 
@@ -11,7 +10,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
 
 using Newtonsoft.Json;
-using System;
+
 using System.Text;
 using System.Threading.Tasks;
 
@@ -22,7 +21,6 @@ namespace Api.Controllers
     public class AuthenticateController : Controller
     {
         #region Deps
-
         private UserService _userSerivce;
         private AuthenticateService _authenticateService;
         private IBackgroundJobClient _backgroundJobClient;
@@ -46,18 +44,17 @@ namespace Api.Controllers
         {
             try
             {
-                var token = await _authenticateService.SignInAsync(model.Email, model.Password);
-
+                var token = await _authenticateService.SignInAsync(model.Username, model.Password);
                 var response = new Response<dynamic> { Status = 200, Data = token };
                 return Ok(response);
             }
-            catch (Exception e) when (e is InvalidUserException || e is InvalidPasswordException || e is EmailNotConfirmedException)
+            catch (AuthenticationException e)
             {
-                return Ok(new Response { Status = 401, Message = e.Message });
+                return Ok(new Response { Status = 401, Message = e.Message, Errors = e.IdentityErrors });
             }
             catch
             {
-                return Ok(new Response { Status = 500, Message = "Internal Server Error." });
+                return Ok(new Response { Status = 401, Message = "Internal Server error." });
             }
         }
 
@@ -67,17 +64,17 @@ namespace Api.Controllers
         {
             try
             {
-                await _authenticateService.SignUpAsync(model.Email, model.Password);
+                await _authenticateService.SignUpAsync(model.Username, model.Email, model.Password);
                 var response = new Response { Status = 200, Message = "User created." };
                 return Ok(response);
             }
-            catch (UserSignUpException e)
+            catch (AuthenticationException e)
             {
-                return Ok(new Response { Status = 403, Message = e.Error.Description });
+                return Ok(new Response { Status = 401, Message = e.Message, Errors = e.IdentityErrors });
             }
             catch
             {
-                return Ok(new Response { Status = 500, Message = "Internal Server Error." });
+                return Ok(new Response { Status = 401, Message = "Internal Server error." });
             }
         }
 
@@ -100,13 +97,13 @@ namespace Api.Controllers
                 var response = new Response { Status = 200, Message = "Account password reset link was sent to you email address." };
                 return Ok(response);
             }
-            catch (InvalidUserException e)
+            catch (AuthenticationException e)
             {
-                return Ok(new Response { Status = 403, Message = e.Message });
+                return Ok(new Response { Status = 401, Message = e.Message, Errors = e.IdentityErrors });
             }
             catch
             {
-                return Ok(new Response { Status = 500, Message = "Internal Server Error." });
+                return Ok(new Response { Status = 401, Message = "Internal Server error." });
             }
         }
 
@@ -125,13 +122,13 @@ namespace Api.Controllers
                 var response = new Response { Status = 200, Message = "Password reset successful" };
                 return Ok(response);
             }
-            catch (Exception e) when (e is InvalidUserException || e is InvalidTokenException)
+            catch (AuthenticationException e)
             {
-                return Ok(new Response { Status = 403, Message = e.Message });
+                return Ok(new Response { Status = 401, Message = e.Message, Errors = e.IdentityErrors });
             }
             catch
             {
-                return Ok(new Response { Status = 500, Message = "Internal Server Error." });
+                return Ok(new Response { Status = 401, Message = "Internal Server error." });
             }
         }
     }

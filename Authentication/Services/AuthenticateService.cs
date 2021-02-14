@@ -35,49 +35,34 @@ namespace Authentication.Services
 
         #endregion
 
-        public async Task SignUpAsync(string email, string password)
+        public async Task SignUpAsync(string username, string email, string password)
         {
             var user = new User
             {
-                UserName = email,
+                UserName = username,
                 Email = email,
-
                 SecurityStamp = Guid.NewGuid().ToString(),
             };
 
             var result = await _userManager.CreateAsync(user, password);
             if (!result.Succeeded)
             {
-                var error = result.Errors.First();
-
-                if (error.Code == nameof(IdentityErrorDescriber.DuplicateEmail))
-                    throw new UserSignUpException(error, "Email already registered.");
-
-                if (error.Code == nameof(IdentityErrorDescriber.PasswordTooShort))
-                    throw new UserSignUpException(error, "Password needs to be at least 6 character long.");
-
-                throw new UserSignUpException(error, "Failed to create user.");
+                throw new AuthenticationException(result.Errors);
             }
         }
 
-        public async Task<string> SignInAsync(string email, string password)
+        public async Task<string> SignInAsync(string username, string password)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByNameAsync(username);
             if (user == null)
             {
-                throw new InvalidUserException("User or Password are invalid.");
+                throw new AuthenticationException("Username or Password are invalid.");
             }
 
             var validPassword = await _userManager.CheckPasswordAsync(user, password);
             if (!validPassword)
             {
-                throw new InvalidPasswordException("User or Password are invalid.");
-            }
-
-            var isEmailConfirmed = await _userManager.IsEmailConfirmedAsync(user);
-            if (!isEmailConfirmed)
-            {
-                throw new EmailNotConfirmedException("The email need to be confirmed.");
+                throw new AuthenticationException("User or Password are invalid.");
             }
 
             var JWTAuthClaims = (await _userManager.GetRolesAsync(user)).Select(userRole =>
@@ -119,7 +104,7 @@ namespace Authentication.Services
 
             if (user == null)
             {
-                throw new InvalidUserException("The provided email are not registered.");
+                throw new AuthenticationException("The provided email are not registered.");
             }
 
             var passwordResetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
@@ -132,20 +117,13 @@ namespace Authentication.Services
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                throw new InvalidUserException("Invalid Token.");
+                throw new AuthenticationException("Invalid Token.");
             }
 
             var result = await _userManager.ResetPasswordAsync(user, token, password);
             if (!result.Succeeded)
             {
-                var error = result.Errors.First();
-
-                if (error.Code == nameof(IdentityErrorDescriber.PasswordTooShort))
-                {
-                    throw new InvalidTokenException(error, "Password must be 6 character long.");
-                }
-
-                throw new InvalidTokenException(error, "Invalid Token.");
+                throw new AuthenticationException(result.Errors);
             }
         }
     }
