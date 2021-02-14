@@ -22,6 +22,7 @@ namespace ChitChat.Core.Tests
         [Test]
         public void SendMessage()
         {
+
         }
     }
 }

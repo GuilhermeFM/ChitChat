@@ -3,7 +3,7 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Contexts
+namespace Authentication.Contexts
 {
     public class AuthenticationDBContext : IdentityDbContext<User>
     {

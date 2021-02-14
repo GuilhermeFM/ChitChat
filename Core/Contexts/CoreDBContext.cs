@@ -1,7 +1,7 @@
 ﻿using Core.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Api.Contexts
+namespace Core.Contexts
 {
     public class CoreDBContext : DbContext
     {

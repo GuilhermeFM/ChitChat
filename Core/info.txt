@@ -1,0 +1,5 @@
+dotnet ef migrations add Initial -c "CoreDBContext" -p "Core/Core.csproj" -s "Api/Api.csproj" -o "Contexts/Migrations"
+dotnet ef database update -c "CoreDBContext" -p "Core/Core.csproj" -s "Api/Api.csproj"
+
+dotnet ef migrations add Initial -c "AuthenticationDBContext" -p "Authentication/Authentication.csproj" -s "Api/Api.csproj" -o "Contexts/Migrations"
+dotnet ef database update -c "AuthenticationDBContext" -p "Authentication/Authentication.csproj" -s "Api/Api.csproj"
