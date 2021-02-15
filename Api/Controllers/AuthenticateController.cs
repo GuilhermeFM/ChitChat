@@ -1,27 +1,21 @@
 ﻿using Api.Models;
-
 using Authentication.Exceptions;
 using Authentication.Jobs;
 using Authentication.Services;
-using Core.Services;
 using Hangfire;
-
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc;
-
 using Newtonsoft.Json;
-
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Api.Controllers
 {
-    [Route("[controller]")]
     [ApiController]
+    [Route("[controller]")]
     public class AuthenticateController : Controller
     {
         #region Deps
-        private UserService _userSerivce;
         private AuthenticateService _authenticateService;
         private IBackgroundJobClient _backgroundJobClient;
 
@@ -29,9 +23,8 @@ namespace Api.Controllers
 
         #region Constructors
 
-        public AuthenticateController(UserService userService, AuthenticateService authenticateService, IBackgroundJobClient backgroundJobClient)
+        public AuthenticateController(AuthenticateService authenticateService, IBackgroundJobClient backgroundJobClient)
         {
-            _userSerivce = userService;
             _authenticateService = authenticateService;
             _backgroundJobClient = backgroundJobClient;
         }

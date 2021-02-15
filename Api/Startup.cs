@@ -83,8 +83,8 @@ namespace Api
 
             #region SETUP - JWT Auth
 
-            var JWTValidAudience = Configuration["JWT:ValidAudience"];
-            var JWTValidIssuer = Configuration["JWT:ValidIssuer"];
+            var JWTValidAudience = Configuration["JWT:Audience"];
+            var JWTValidIssuer = Configuration["JWT:Issuer"];
 
             var JWTSecrete = Configuration["JWT:Secret"];
             var JWTSecreteBytes = Encoding.UTF8.GetBytes(JWTSecrete);
@@ -103,9 +103,8 @@ namespace Api
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
                     ValidateIssuer = true,
-                    ValidateAudience = true,
+                    ValidateAudience = false,
                     ValidIssuer = JWTValidIssuer,
-                    ValidAudience = JWTValidAudience,
                     IssuerSigningKey = JWTSymetricSecurityKey
                 };
             });
@@ -138,7 +137,7 @@ namespace Api
             services.AddSignalR();
             services.AddTransient<AuthenticateService>();
             services.Configure<AuthenticateServiceSettings>(Configuration.GetSection("JWT"));
-            services.AddTransient<UserService>();
+            services.AddTransient<PersonService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

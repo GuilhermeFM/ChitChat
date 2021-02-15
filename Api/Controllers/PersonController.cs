@@ -1,14 +1,15 @@
 ﻿using Core.Models;
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Controllers
 {
+    [Authorize]
     [Route("[controller]")]
-    public class UserController : Controller
+    public class PersonController : Controller
     {
         [HttpPost("[action]")]
-        public IActionResult Register(User user)
+        public IActionResult Register(Person user)
         {
             return Ok();
         }

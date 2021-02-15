@@ -70,8 +70,8 @@ namespace Authentication.Services
             )
             .Concat(new List<Claim>
             {
+                new Claim(ClaimTypes.UserData, user.Id),
                 new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             });
 
             var JWTSecrete = _settings.Secret;
@@ -89,6 +89,8 @@ namespace Authentication.Services
             (
                 expires: JWTExpires,
                 claims: JWTAuthClaims,
+                issuer: _settings.Issuer,
+                audience: _settings.Audience,
                 signingCredentials: JWTSigningCredential
             );
 
